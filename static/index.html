@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exoplanet Detection</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background:linear-gradient(135deg, #1e3c72, #2a5298);
+            color: #fff;
+            line-height: 1.6;
+            padding: 20px;
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+            color: #ffd700;
+            animation: slideDown 1s ease-in-out;
+        }
+
+        p {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #e0e0e0;
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        form {
+            max-width: 500px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+            color: #333;
+            animation: zoomIn 1s ease-in-out;
+        }
+
+        label {
+            font-weight: bold;
+            color: #333;
+            margin-top: 10px;
+            display: block;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        input:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #1e90ff;
+            box-shadow: 0 0 8px rgba(30, 144, 255, 0.6);
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg, #1e90ff, #00bfff);
+            color: #fff;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.3s, background 0.3s ease-in-out;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #00bfff, #1e90ff);
+            transform: scale(1.05);
+        }
+
+        #result {
+            text-align: center;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            color: #ffd700;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes zoomIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Exoplanet Detection</h1>
+    <p>Enter the features below to predict if the candidate is an exoplanet. Hover over the field labels for details.</p>
+    <form id="prediction-form">
+        <label for="feature1" title="Feature 1: Indicates the orbital period of the planet in days.">Feature 1 (Orbital Period):</label>
+        <input type="text" id="feature1" name="feature1" placeholder="E.g., 365" required>
+
+        <label for="feature2" title="Feature 2: Reflects the planet's distance from its host star in AU.">Feature 2 (Distance from Star):</label>
+        <input type="text" id="feature2" name="feature2" placeholder="E.g., 1.0" required>
+
+        <label for="feature3" title="Feature 3: The planet's mass relative to Earth.">Feature 3 (Planetary Mass):</label>
+        <input type="text" id="feature3" name="feature3" placeholder="E.g., 5.972" required>
+
+        <label for="feature4" title="Feature 4: Radius of the planet relative to Earth.">Feature 4 (Planetary Radius):</label>
+        <input type="text" id="feature4" name="feature4" placeholder="E.g., 1.0" required>
+
+        <label for="feature5" title="Feature 5: Temperature of the planet's surface in Kelvin.">Feature 5 (Surface Temperature):</label>
+        <input type="text" id="feature5" name="feature5" placeholder="E.g., 288" required>
+
+        <label for="feature6" title="Feature 6: Reflectivity of the planet's surface.">Feature 6 (Albedo):</label>
+        <input type="text" id="feature6" name="feature6" placeholder="E.g., 0.3" required>
+
+        <label for="feature7" title="Feature 7: Determines if the planet is within the habitable zone.">Feature 7 (Habitable Zone):</label>
+        <input type="text" id="feature7" name="feature7" placeholder="E.g., Yes/No" required>
+
+        <label for="feature8" title="Feature 8: Indicates the type of star the planet orbits.">Feature 8 (Host Star Type):</label>
+        <input type="text" id="feature8" name="feature8" placeholder="E.g., G-Type" required>
+
+        <button type="submit">Predict</button>
+    </form>
+
+    <p id="result"></p>
+
+    <script>
+        document.getElementById('prediction-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = {};
+            formData.forEach((value, key) => (data[key] = value));
+
+            // Send data to backend for prediction
+            const response = await fetch('/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+            });
+
+            const result = await response.json();
+            document.getElementById('result').textContent = `Prediction: ${result.prediction}`;
+        });
+    </script>
+</body>
+</html>
